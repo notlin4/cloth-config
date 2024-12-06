@@ -23,6 +23,7 @@ on:
             - v14-24w14potato
             - v15
             - v16
+            - v17
 
 jobs:
     build:

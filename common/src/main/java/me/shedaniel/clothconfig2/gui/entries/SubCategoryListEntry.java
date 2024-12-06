@@ -137,8 +137,13 @@ public class SubCategoryListEntry extends TooltipListEntry<List<AbstractConfigLi
         if (isExpanded()) {
             int yy = y + 24;
             for (AbstractConfigListEntry<?> entry : filteredEntries()) {
+                entry.setBounds(new Rectangle(x + 14, yy, entryWidth - 14, entry.getItemHeight()));
                 entry.render(graphics, -1, yy, x + 14, entryWidth - 14, entry.getItemHeight(), mouseX, mouseY, isHovered && getFocused() == entry, delta);
                 yy += entry.getItemHeight();
+            }
+        } else {
+            for (AbstractConfigListEntry<?> entry : entries) {
+                entry.setBounds(new Rectangle());
             }
         }
     }
@@ -285,6 +290,20 @@ public class SubCategoryListEntry extends TooltipListEntry<List<AbstractConfigLi
         return Optional.ofNullable(error);
     }
     
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        if (super.isMouseOver(mouseX, mouseY)) return true;
+        if (isExpanded()) {
+            for (AbstractConfigListEntry<?> entry : entries) {
+                if (entry.isMouseOver(mouseX, mouseY)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
     public class CategoryLabelWidget implements GuiEventListener, NarratableEntry {
         private final Rectangle rectangle = new Rectangle();
         private boolean isHovered;
@@ -316,6 +335,11 @@ public class SubCategoryListEntry extends TooltipListEntry<List<AbstractConfigLi
         @Override
         public void updateNarration(NarrationElementOutput narrationElementOutput) {
             narrationElementOutput.add(NarratedElementType.TITLE, getFieldName());
+        }
+        
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return rectangle.contains(mouseX, mouseY);
         }
     }
     

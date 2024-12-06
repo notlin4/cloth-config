@@ -123,11 +123,30 @@ public class MultiElementListEntry<T> extends TooltipListEntry<T> implements Exp
         if (isExpanded()) {
             int yy = y + 24;
             for (AbstractConfigListEntry<?> entry : entries) {
+                entry.setBounds(new Rectangle(x, yy, entryWidth, entry.getItemHeight()));
                 entry.render(graphics, -1, yy, x + 14, entryWidth - 14, entry.getItemHeight(), mouseX, mouseY, isHovered, delta);
                 yy += entry.getItemHeight();
                 yy += Math.max(0, entry.getMorePossibleHeight());
             }
+        } else {
+            for (AbstractConfigListEntry<?> entry : entries) {
+                entry.setBounds(new Rectangle());
+            }
         }
+    }
+    
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        if (super.isMouseOver(mouseX, mouseY)) return true;
+        if (isExpanded()) {
+            for (AbstractConfigListEntry<?> entry : entries) {
+                if (entry.isMouseOver(mouseX, mouseY)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
     
     @Override

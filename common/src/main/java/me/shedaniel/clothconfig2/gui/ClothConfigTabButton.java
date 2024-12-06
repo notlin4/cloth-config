@@ -73,8 +73,8 @@ public class ClothConfigTabButton extends AbstractButton {
     }
     
     @Override
-    protected boolean clicked(double double_1, double double_2) {
-        return visible && active && isMouseOver(double_1, double_2);
+    protected boolean isValidClickButton(int i) {
+        return visible && active && super.isValidClickButton(i);
     }
     
     @Override

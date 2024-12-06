@@ -165,6 +165,11 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
         return selectionElement.mouseScrolled(double_1, double_2, amountX, amountY);
     }
     
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY) || selectionElement.isMouseOver(mouseX, mouseY);
+    }
+    
     public static class SelectionElement<R> extends AbstractContainerEventHandler implements Renderable {
         protected Rectangle bounds;
         protected boolean active;
@@ -189,6 +194,7 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
             graphics.fill(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, topRenderer.isSelected ? -1 : -6250336);
             graphics.fill(bounds.x + 1, bounds.y + 1, bounds.x + bounds.width - 1, bounds.y + bounds.height - 1, -16777216);
             topRenderer.render(graphics, mouseX, mouseY, bounds.x, bounds.y, bounds.width, bounds.height, delta);
+            topRenderer.updateBounds(bounds);
             if (menu.isExpanded())
                 menu.render(graphics, mouseX, mouseY, bounds, delta);
         }
@@ -234,6 +240,11 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
                 dontReFocus = false;
             }
             return b;
+        }
+        
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return bounds.contains(mouseX, mouseY) || (menu.isExpanded() && menu.isMouseOver(mouseX, mouseY));
         }
     }
     
@@ -413,9 +424,12 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
             for (SelectionCellElement<R> cell : currentElements) {
                 if (yy + getCellCreator().getCellHeight() >= lastRectangle.y + lastRectangle.height && yy <= lastRectangle.y + lastRectangle.height + last10Height + 1) {
                     graphics.fill(lastRectangle.x + 1, (int) yy, lastRectangle.x + getCellCreator().getCellWidth(), (int) yy + getCellCreator().getCellHeight(), 0xFF000000);
+                    cell.bounds.setBounds(lastRectangle.x, (int) yy, getMaxScrollPosition() > 6 ? getCellCreator().getCellWidth() - 6 : getCellCreator().getCellWidth(), getCellCreator().getCellHeight());
                     cell.render(graphics, mouseX, mouseY, lastRectangle.x, (int) yy, getMaxScrollPosition() > 6 ? getCellCreator().getCellWidth() - 6 : getCellCreator().getCellWidth(), getCellCreator().getCellHeight(), delta);
-                } else
+                } else {
+                    cell.bounds.setBounds(0, 0, 0, 0);
                     cell.dontRender(graphics, delta);
+                }
                 yy += getCellCreator().getCellHeight();
             }
             graphics.disableScissor();
@@ -557,6 +571,7 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
     }
     
     public static abstract class SelectionCellElement<R> extends AbstractContainerEventHandler {
+        @Deprecated final Rectangle bounds = new Rectangle();
         @SuppressWarnings("NotNullFieldNotInitialized") @Deprecated @NotNull private DropdownBoxEntry<R> entry;
         
         @NotNull
@@ -573,6 +588,11 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
         
         @Nullable
         public abstract R getSelection();
+        
+        @Override
+        public boolean isMouseOver(double d, double e) {
+            return bounds.contains(d, e);
+        }
     }
     
     public static class DefaultSelectionCellElement<R> extends SelectionCellElement<R> {
@@ -638,6 +658,7 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
     }
     
     public static abstract class SelectionTopCellElement<R> extends AbstractContainerEventHandler {
+        @Deprecated private final Rectangle bounds = new Rectangle();
         @Deprecated private DropdownBoxEntry<R> entry;
         protected boolean isSelected = false;
         
@@ -689,6 +710,15 @@ public class DropdownBoxEntry<T> extends TooltipListEntry<T> {
         }
         
         public abstract void render(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, float delta);
+        
+        private void updateBounds(Rectangle bounds) {
+            this.bounds.setBounds(bounds);
+        }
+        
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return this.bounds.contains(mouseX, mouseY);
+        }
     }
     
     public static class DefaultSelectionTopCellElement<R> extends SelectionTopCellElement<R> {

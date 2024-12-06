@@ -19,6 +19,7 @@
 
 package me.shedaniel.clothconfig2.gui.entries;
 
+import me.shedaniel.math.Rectangle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
@@ -98,6 +99,7 @@ public abstract class AbstractListListEntry<T, C extends AbstractListListEntry.A
     @ApiStatus.Internal
     public static abstract class AbstractListCell<T, SELF extends AbstractListCell<T, SELF, OUTER_SELF>, OUTER_SELF extends AbstractListListEntry<T, SELF, OUTER_SELF>> extends BaseListCell {
         protected final OUTER_SELF listListEntry;
+        protected final Rectangle cellBounds = new Rectangle();
         
         public AbstractListCell(@Nullable T value, OUTER_SELF listListEntry) {
             this.listListEntry = listListEntry;
@@ -105,6 +107,20 @@ public abstract class AbstractListListEntry<T, C extends AbstractListListEntry.A
         }
         
         public abstract T getValue();
+        
+        @Override
+        public void updateBounds(boolean expanded, int x, int y, int entryWidth, int entryHeight) {
+            if (expanded) {
+                this.cellBounds.setBounds(x, y, entryWidth, entryHeight);
+            } else {
+                this.cellBounds.setBounds(0, 0, 0, 0);
+            }
+        }
+        
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return cellBounds.contains(mouseX, mouseY);
+        }
     }
     
 }

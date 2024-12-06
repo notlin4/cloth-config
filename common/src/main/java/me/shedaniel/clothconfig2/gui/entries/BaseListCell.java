@@ -53,6 +53,8 @@ public abstract class BaseListCell extends AbstractContainerEventHandler impleme
     
     public abstract void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta);
     
+    public void updateBounds(boolean expanded, int x, int y, int entryWidth, int entryHeight) {}
+    
     public void updateSelected(boolean isSelected) {}
     
     public boolean isRequiresRestart() {

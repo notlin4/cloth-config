@@ -306,6 +306,13 @@ public abstract class BaseListEntry<T, C extends BaseListCell, SELF extends Base
             int yy = y + 24;
             for (BaseListCell cell : cells) {
                 cell.render(graphics, -1, yy, x + 14, entryWidth - 14, cell.getCellHeight(), mouseX, mouseY, getParent().getFocused() != null && getParent().getFocused().equals(this) && getFocused() != null && getFocused().equals(cell), delta);
+                cell.updateBounds(true, x + 14, yy, entryWidth - 14, cell.getCellHeight());
+                yy += cell.getCellHeight();
+            }
+        } else {
+            int yy = y + 24;
+            for (BaseListCell cell : cells) {
+                cell.updateBounds(false, x + 14, yy, entryWidth - 14, cell.getCellHeight());
                 yy += cell.getCellHeight();
             }
         }
@@ -325,6 +332,20 @@ public abstract class BaseListEntry<T, C extends BaseListCell, SELF extends Base
     
     public boolean insertInFront() {
         return insertInFront;
+    }
+    
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        if (super.isMouseOver(mouseX, mouseY)) return true;
+        if (isExpanded()) {
+            for (BaseListCell cell : cells) {
+                if (cell.isMouseOver(mouseX, mouseY)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
     
     public class ListLabelWidget implements GuiEventListener {
@@ -374,6 +395,11 @@ public abstract class BaseListEntry<T, C extends BaseListCell, SELF extends Base
         @Override
         public boolean isFocused() {
             return false;
+        }
+        
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return rectangle.contains(mouseX, mouseY) && !resetWidget.isMouseOver(mouseX, mouseY);
         }
     }
     

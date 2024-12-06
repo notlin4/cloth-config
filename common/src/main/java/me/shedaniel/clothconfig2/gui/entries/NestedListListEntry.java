@@ -26,6 +26,7 @@ import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ReferenceProvider;
 import me.shedaniel.clothconfig2.gui.entries.NestedListListEntry.NestedListCell;
 import me.shedaniel.clothconfig2.gui.widget.DynamicEntryListWidget;
+import me.shedaniel.math.Rectangle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
@@ -113,6 +114,16 @@ public final class NestedListListEntry<T, INNER extends AbstractConfigListEntry<
         }
         
         @Override
+        public void updateBounds(boolean expanded, int x, int y, int entryWidth, int entryHeight) {
+            super.updateBounds(expanded, x, y, entryWidth, entryHeight);
+            if (expanded) {
+                nestedEntry.setBounds(new Rectangle(x, y, entryWidth, nestedEntry.getItemHeight()));
+            } else {
+                nestedEntry.setBounds(new Rectangle());
+            }
+        }
+        
+        @Override
         public List<? extends GuiEventListener> children() {
             return Collections.singletonList(nestedEntry);
         }
@@ -154,6 +165,11 @@ public final class NestedListListEntry<T, INNER extends AbstractConfigListEntry<
         @Override
         public void updateNarration(NarrationElementOutput narrationElementOutput) {
             
+        }
+        
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return super.isMouseOver(mouseX, mouseY) || nestedEntry.isMouseOver(mouseX, mouseY);
         }
     }
 }

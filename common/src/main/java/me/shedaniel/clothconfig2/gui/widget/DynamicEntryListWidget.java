@@ -26,6 +26,7 @@ import me.shedaniel.clothconfig2.api.DisableableWidget;
 import me.shedaniel.clothconfig2.api.HideableWidget;
 import me.shedaniel.clothconfig2.api.Requirement;
 import me.shedaniel.clothconfig2.api.TickableWidget;
+import me.shedaniel.math.Rectangle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -576,6 +577,7 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
     }
     
     protected void renderItem(GuiGraphics graphics, E item, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta) {
+        item.setBounds(new Rectangle(x, y, entryWidth, entryHeight));
         item.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isSelected, delta);
     }
     
@@ -636,6 +638,7 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
     @Environment(EnvType.CLIENT)
     public abstract static class Entry<E extends Entry<E>> implements GuiEventListener, TickableWidget, HideableWidget, DisableableWidget {
         @Deprecated DynamicEntryListWidget<E> parent;
+        @Deprecated final Rectangle bounds = new Rectangle();
         @Nullable
         private NarratableEntry lastNarratable;
         @Nullable
@@ -651,7 +654,7 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         public abstract void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta);
         
         public boolean isMouseOver(double double_1, double double_2) {
-            return Objects.equals(this.parent.getItemAtPosition(double_1, double_2), this);
+            return this.bounds.contains(double_1, double_2);
         }
         
         public DynamicEntryListWidget<E> getParent() {
@@ -660,6 +663,11 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         
         public void setParent(DynamicEntryListWidget<E> parent) {
             this.parent = parent;
+        }
+        
+        @Deprecated
+        public void setBounds(Rectangle bounds) {
+            this.bounds.setBounds(bounds);
         }
         
         @Override
