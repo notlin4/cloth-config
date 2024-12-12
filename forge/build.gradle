@@ -105,7 +105,7 @@ unifiedPublishing {
     project {
         displayName = "[MinecraftForge $rootProject.supported_version] v$project.version"
         releaseType = "release"
-        gameVersions = ["1.21"]
+        gameVersions = ["1.21.2", "1.21.3"]
         gameLoaders = ["forge"]
 
         mainPublication remapJar
