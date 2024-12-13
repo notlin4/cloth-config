@@ -1,6 +1,6 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.9-SNAPSHOT" apply false
     id "me.shedaniel.unified-publishing" version "0.1.+" apply false
     id "maven-publish"
     id "org.cadixdev.licenser" version "0.6.1" apply false
@@ -38,11 +38,14 @@ allprojects {
     def runNumber = (System.getenv("GITHUB_RUN_NUMBER") == null ? "9999" : System.getenv("GITHUB_RUN_NUMBER"))
 
     version = rootProject.base_version + "." + runNumber
-    archivesBaseName = rootProject.archives_base_name
+
+    base {
+        archivesName = rootProject.archives_base_name
+    }
 
     group = rootProject.maven_group
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         options.encoding = "UTF-8"
 
         // The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
